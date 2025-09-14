@@ -1,9 +1,7 @@
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
-import os, re, fitz, io, requests
-from PIL import Image
-import pytesseract
+import os, re, fitz, requests
 
 app = FastAPI(title="IBAN Extraction API")
 
@@ -25,12 +23,7 @@ def extract_text_from_pdf(pdf_path):
         doc = fitz.open(pdf_path)
         for page in doc:
             page_text = page.get_text()
-            if page_text.strip():
-                text += page_text + "\n"
-            else:
-                pix = page.get_pixmap(dpi=400)
-                img = Image.open(io.BytesIO(pix.tobytes("png")))
-                text += pytesseract.image_to_string(img, lang='fra') + "\n"
+            text += page_text + "\n"
     except Exception as e:
         print(f"Erreur PDF: {e}")
     return text
